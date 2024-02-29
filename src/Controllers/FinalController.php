@@ -13,13 +13,14 @@ class FinalController extends Controller
     /**
      * Update installed file and display finished view.
      *
-     * @param  \RachidLaasri\LaravelInstaller\Helpers\InstalledFileManager  $fileManager
-     * @param  \RachidLaasri\LaravelInstaller\Helpers\FinalInstallManager  $finalInstall
-     * @param  \RachidLaasri\LaravelInstaller\Helpers\EnvironmentManager  $environment
+     * @param \RachidLaasri\LaravelInstaller\Helpers\InstalledFileManager $fileManager
+     * @param \RachidLaasri\LaravelInstaller\Helpers\FinalInstallManager $finalInstall
+     * @param \RachidLaasri\LaravelInstaller\Helpers\EnvironmentManager $environment
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function finish(InstalledFileManager $fileManager, FinalInstallManager $finalInstall, EnvironmentManager $environment)
     {
+        $this->updateInstallationStutus();
         $finalMessages = $finalInstall->runFinal();
         $finalStatusMessage = $fileManager->update();
         $finalEnvFile = $environment->getEnvContent();
@@ -27,5 +28,21 @@ class FinalController extends Controller
         event(new LaravelInstallerFinished);
 
         return view('vendor.installer.finished', compact('finalMessages', 'finalStatusMessage', 'finalEnvFile'));
+    }
+
+    public function updateInstallationStutus()
+    {
+        // Path to .env file
+        $dotEnvPath = base_path('.env');
+
+        // Get contents of file
+        $content = file_get_contents($dotEnvPath);  
+
+        // Update specific variable 
+        $content = preg_replace('/^INSTALLATION_STATUS=(.*)$/m', 'INSTALLATION_STATUS=true', $content);
+
+        // Write updated content back to file
+        file_put_contents($dotEnvPath, $content);
+     
     }
 }
