@@ -41,7 +41,9 @@
                     <label for="app_name">
                         {{ trans('installer_messages.environment.wizard.form.app_name_label') }}
                     </label>
-                    <input type="text" name="app_name" id="app_name" value="" placeholder="{{ trans('installer_messages.environment.wizard.form.app_name_placeholder') }}" />
+                    <input type="text" name="app_name" id="app_name" onkeydown="avoidSpaceInInputBox(event)" value="" placeholder="Space is not allowed to add App Name" />
+                    <label class="error-block" ></label>
+
                     @if ($errors->has('app_name'))
                         <span class="error-block">
                             <i class="fa fa-fw fa-exclamation-triangle" aria-hidden="true"></i>
@@ -55,10 +57,10 @@
                         {{ trans('installer_messages.environment.wizard.form.app_environment_label') }}
                     </label>
                     <select name="environment" id="environment" onchange='checkEnvironment(this.value);'>
-                        <option value="local" selected>{{ trans('installer_messages.environment.wizard.form.app_environment_label_local') }}</option>
+                        <option value="production" selected>{{ trans('installer_messages.environment.wizard.form.app_environment_label_production') }}</option>
+                        <option value="local" >{{ trans('installer_messages.environment.wizard.form.app_environment_label_local') }}</option>
                         <option value="development">{{ trans('installer_messages.environment.wizard.form.app_environment_label_developement') }}</option>
                         <option value="qa">{{ trans('installer_messages.environment.wizard.form.app_environment_label_qa') }}</option>
-                        <option value="production">{{ trans('installer_messages.environment.wizard.form.app_environment_label_production') }}</option>
                         <option value="other">{{ trans('installer_messages.environment.wizard.form.app_environment_label_other') }}</option>
                     </select>
                     <div id="environment_text_input" style="display: none;">
@@ -520,6 +522,12 @@
         }
         function showApplicationSettings() {
             document.getElementById('tab3').checked = true;
+        }
+        function avoidSpaceInInputBox(event) {
+            if (event.keyCode === 32) {
+                // Prevent default behavior (space insertion)
+                event.preventDefault();
+              }
         }
     </script>
 @endsection
